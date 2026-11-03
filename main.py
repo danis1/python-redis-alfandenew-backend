@@ -6,6 +6,7 @@ from datetime import datetime
 from fastapi.exceptions import RequestValidationError
 import redis
 import json
+import os
 
 
 
@@ -30,7 +31,10 @@ class Navio(BaseModel):
 
 app = FastAPI()
 
-r = redis.Redis(host="localhost", port=6379,decode_responses=True)
+r = redis.Redis.from_url(
+    os.getenv("REDIS_URL", "redis://localhost:6379/0"),
+    decode_responses=True,
+)
 
 @app.get("/")
 def mensagem():
