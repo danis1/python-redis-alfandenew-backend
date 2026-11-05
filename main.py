@@ -126,6 +126,23 @@ def atualizar(id: int, navio: Navio):
 
 
 
+#DELETE /api/v1/registros/{id:int} ===============================================
+@app.delete("/api/v1/registros/{id}")
+def excluir_registro(id: int):
+    with r.pipeline() as transacao:
+        transacao.delete(f"registro:{id}")
+        transacao.srem("registros", id)
+        excluidos, _ = transacao.execute()
+
+    if not excluidos:
+        return JSONResponse(
+            status_code=404,
+            content={"errorMessage": "Registro não encontrado"}
+        )
+
+    return {}
+
+
 #LISTAGEM Rota GET /api/v1/registros ==============================================
 @app.get("/api/v1/registros")
 def listar_registros(search: Optional[str] = None):
